@@ -1,0 +1,38 @@
+# Keep the bundled skills identical to the live ones on onecell.io.
+#
+# onecell's skills change with the product. The plugin ships copies so it works the moment
+# it is installed; this pulls the live files once a day (or on demand) and commits any
+# change. The plugin has no `version`, so installs track commits and pick it up.
+name: Sync skills
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull the live skills
+        run: |
+          set -euo pipefail
+          for skill in onecell onecell-bridge; do
+            curl -fsS "https://onecell.io/skills/${skill}.md" -o "plugins/onecell/skills/${skill}/SKILL.md.new"
+            # A skill always opens with its frontmatter; anything else (an error page,
+            # the deploy fallback) must never replace a good copy.
+            head -1 "plugins/onecell/skills/${skill}/SKILL.md.new" | grep -qx -- '---'
+            grep -q "^name: ${skill}$" "plugins/onecell/skills/${skill}/SKILL.md.new"
+            mv "plugins/onecell/skills/${skill}/SKILL.md.new" "plugins/onecell/skills/${skill}/SKILL.md"
+          done
+      - name: Commit if they changed
+        run: |
+          if git diff --quiet; then echo "skills unchanged"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Sync skills from onecell.io"
+          git push

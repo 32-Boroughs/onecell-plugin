@@ -1,0 +1,15 @@
+{
+  "name": "onecell",
+  "description": "onecell for Claude Code: durable memory for people and agents.",
+  "owner": {
+    "name": "32 Boroughs",
+    "url": "https://onecell.io"
+  },
+  "plugins": [
+    {
+      "name": "onecell",
+      "source": "./plugins/onecell",
+      "description": "Connects Claude Code to onecell (MCP) and teaches it the onecell rules: Inbox vs hive, dry runs, search then cite, when to ask you."
+    }
+  ]
+}

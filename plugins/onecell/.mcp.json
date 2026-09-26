@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "onecell": {
+      "type": "http",
+      "url": "https://onecell.io/api/mcp"
+    }
+  }
+}
