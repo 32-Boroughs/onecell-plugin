@@ -146,7 +146,7 @@ Mutating tools default `dry_run` true. Call once, read `{applied, reason}`, then
 - `create_document` is always a draft. Publish with `set_status`.
 - `update_document` **replaces the entire `blocks` array**. `get_document` first. Pass `expected_version`.
 - Ids on blocks are generated if omitted.
-- Pictures and attachments: `upload_asset` with `content_base64` (8 MB max; the bytes decide the type), then put the returned `block` in the document.
+- Pictures and attachments: `upload_asset` with `content_base64` (8 MB max; the bytes decide the type), then put the returned `block` in the document. Pass `document_id` for the document it is going into — create the document first if needed — so the file belongs to that document's owner and keeps showing for everyone who can read it, even in a shared cell you later lose.
 - `delete_document` moves to trash (out of search immediately). `restore_document` brings it back. `list_documents` with `trash: true` lists the bin. After 30 days the reconciler hard-deletes.
 - Move between cells you own, in any cluster, with `update_document` `cell` — follow Move work. Nested children come along. Granted cells cannot be a destination. In the UI, "Move to…" does the same; drop a row onto another in the same cell to nest; drop it on the cell in the sidebar to un-nest.
 - Deleting a **cell** is UI-only and only for an empty one. Never try to empty a cell so it can be deleted.
