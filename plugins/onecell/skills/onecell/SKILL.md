@@ -178,6 +178,9 @@ Do not smuggle a diagram into a text/code block.
 | Video | `{type: video, provider: youtube / vimeo / loom, videoId, url, title, hash?, start?, caption?}` — paste `url`; provider and videoId must match it; the player loads only when a reader clicks |
 | Formula | `{type: math, tex, display, caption?}` — TeX rendered by KaTeX with links, images and raw HTML off; must parse to publish |
 | Collapsible | `{type: toggle, summary, html, open}` — summary is all a reader sees until opened |
+| Change | `{type: diff, lang, before, after, filename?, caption?}` — both sides whole, not a patch; the line diff is drawn for you. Use instead of pasting a diff into `code` |
+| Decision | `{type: decision, title, status: proposed / accepted / rejected / superseded, date?: YYYY-MM-DD, context, decision, consequences?}` — plain text; blank line = new paragraph. One per decision, so search finds it |
+| Cite memory | `{type: fact, factId}` — id from `remember` / `recall`; renders the live belief (follows supersedes). Never copy fact text into prose. Private: share pages show a placeholder. `get_document` with `resolve_facts` returns the text |
 
 ## Memory
 
