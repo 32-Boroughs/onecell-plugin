@@ -178,9 +178,21 @@ Do not smuggle a diagram into a text/code block.
 | Video | `{type: video, provider: youtube / vimeo / loom, videoId, url, title, hash?, start?, caption?}` — paste `url`; provider and videoId must match it; the player loads only when a reader clicks |
 | Formula | `{type: math, tex, display, caption?}` — TeX rendered by KaTeX with links, images and raw HTML off; must parse to publish |
 | Collapsible | `{type: toggle, summary, html, open}` — summary is all a reader sees until opened |
+| Sequence of events | `{type: timeline, entries: [{when, title, body?, tone?: good / bad / neutral}], caption?}` — 1–100, shown in the order written; `when` is display text ("2026-09-28", "14:32 UTC", "Q3"); ISO dates must run in order. Incidents, project history, changelogs — not how-to (use steps) |
+| Headline numbers | `{type: stats, items: [{label, value, unit?, delta?, tone?: good / bad / neutral, note?}], caption?}` — 1–6 tiles; value is display text ("4.2k", "$1.3M"); tone colours the change because up is not always good. A chart is for data; this is for the few numbers that matter |
 | Change | `{type: diff, lang, before, after, filename?, caption?}` — both sides whole, not a patch; the line diff is drawn for you. Use instead of pasting a diff into `code` |
-| Decision | `{type: decision, title, status: proposed / accepted / rejected / superseded, date?: YYYY-MM-DD, context, decision, consequences?}` — plain text; blank line = new paragraph. One per decision, so search finds it |
+| Decision | `{type: decision, title, status: proposed / accepted / rejected / superseded, date?: YYYY-MM-DD, context, decision, consequences?}` — plain text; blank line = new paragraph. One per decision, so search finds it. Never write `decidedBy` / `decidedAt`: the server stamps whoever saves a change of status |
 | Cite memory | `{type: fact, factId}` — id from `remember` / `recall`; renders the live belief (follows supersedes). Never copy fact text into prose. Private: share pages show a placeholder. `get_document` with `resolve_facts` returns the text |
+
+## Decisions
+
+Open questions live as `decision` blocks with status `proposed`. `list_decisions` lists them (default open; `status`, `cell`, `decided_by` filter) with a link to each block. It covers the active cluster plus Inbox unless you pass `all_clusters: true` — do that for "what is open?", so a decision in another cluster is not missed.
+
+When the human asks what is open, or a session reaches a choice already written as a decision:
+
+1. `list_decisions` with `all_clusters: true`, then ask the human — one question per decision, the proposal first. Never decide for them.
+2. On an answer: `get_document`, change that block's `status` (and `decision` / `consequences` when the answer differs from the proposal), `update_document` with `expected_version`. Dry run first.
+3. The decider is recorded from your key, as via an agent. Report back: title → new status, and the link.
 
 ## Memory
 
