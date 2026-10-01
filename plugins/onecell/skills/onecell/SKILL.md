@@ -54,8 +54,8 @@ One login may belong to several clusters. Session and API keys still bind to one
 
 1. `list_cells` — note `owned`, slug, `embedding_policy`. `none` is not searchable; `local_only` needs a local embedder.
 1b. `create_cell` opens a cell in **your** workspace. Inbox is reserved. It is not shared until `share_cell`. dry_run first. Humans can rename a cell or archive it (Inbox cannot be archived).
-2. `search` the question (optional `cell`). Read passages and heading trails. Judge by score; a query always returns candidates.
-3. `get_document` only for the hit you will use. Do not list-and-dump.
+2. `search` the question (optional `cell`). Hits are grouped by document (5 by default), each with up to three short passages and heading trails. Judge by score; a query always returns candidates.
+3. `get_document` only for the hit you will use. On a long page read less: `outline` first, then `section` (a heading id) or `blocks` (ids). Do not list-and-dump.
 
 Cite as: cell · heading path · passage. Never paste a whole document into the reply.
 
@@ -125,6 +125,15 @@ Agent recipe:
 5. One `remember` for the durable decision (not the transcript).
 6. Reply with `{origin}/cells/{cellSlug}/{documentId}` (UUID, not slug).
 
+## Hooks
+
+If the human turned hooks on (Settings → Agents), onecell can speak without being asked:
+
+- Lines headed **onecell memory that may be relevant** were added by a hook from your prompt. Use and cite them (cell · heading); do not search for the same thing again.
+- **onecell briefing** lines open a session or follow `/clear`: active cluster, open decisions, recent Capture drafts.
+- A stop that says **this turn looks like it settled something** is a suggestion. If it is worth keeping, save one short draft to the **Capture** cell (fall back to Inbox) and at most one `remember`, then stop. If not, or already saved, just stop. Never publish or share from a nudge.
+- Never call `hook_event` yourself; it is for the client's hooks.
+
 ## Linking documents for humans
 
 UI routes are `/cells/{cellSlug}/{documentId}` — the second segment is the document **UUID**, not its slug. A slug in that slot 404s once signed in.
@@ -144,7 +153,10 @@ Cite agent answers as: cell · heading path · passage. The UUID link is for ope
 Mutating tools default `dry_run` true. Call once, read `{applied, reason}`, then again with `dry_run: false`. Human-facing choices (publish, trash, move) → Decision points.
 
 - `create_document` is always a draft. Publish with `set_status`.
-- `update_document` **replaces the entire `blocks` array**. `get_document` first. Pass `expected_version`.
+- **`draft_only_key`** means your credential is drafts only: it can read, create and edit drafts, and `remember`, but not publish, share, delete, invite, edit a published document, move a document, or accept or reject a decision. Say so and ask the human to do it (or to use a full key). Do not retry, and do not look for another way around it.
+- `update_document` **replaces the entire `blocks` array**. `get_document` first — the whole document, even if you found the part with `outline` / `section` — and pass `expected_version`. An update that would drop half or more of the blocks is refused (`mass_removal`) unless acknowledged.
+- Writes answer with what changed (`changes.fields`, `changes.blockIds`) and the new `document.version`, not the document. Pass `verbose: true` only if you need the whole thing back.
+- Tags classify documents for a work queue: `create_document` `tags` (lowercase, `key:value` allowed, e.g. `ticket`, `state:todo`; 20 max). Move state with `update_document` `tags_add` / `tags_remove` and `expected_version` — no `blocks` needed. Find them with `list_documents` `tags` (all must match; `state:*` matches a prefix); every row carries its tags.
 - Ids on blocks are generated if omitted.
 - Pictures and attachments: `upload_asset` with `content_base64` (8 MB max; the bytes decide the type), then put the returned `block` in the document. Pass `document_id` for the document it is going into — create the document first if needed — so the file belongs to that document's owner and keeps showing for everyone who can read it, even in a shared cell you later lose.
 - `delete_document` moves to trash (out of search immediately). `restore_document` brings it back. `list_documents` with `trash: true` lists the bin. After 30 days the reconciler hard-deletes.
@@ -253,6 +265,7 @@ Stay on nouns: cluster · cell · hive · Inbox.
 ## Team
 
 - `list_members` then `share_cell` (owner only). Default role viewer. Check `mailed`. Inbox cannot be shared.
+- A cell can also be open to its whole cluster: `share_cell` with `cluster` (`none`, `viewer`, `editor`; owner only; dry run first). Everyone in the cluster gets that level, including people who join later, so ask the human first. `list_cells` / `list_cell_grants` show `clusterAccess`. A new member gets the hive plus every cell open to the cluster; nothing else.
 - Share, invite, or public link → Decision points first.
 - `invite_member`: they sign in with that email. `send_email: false` returns a join `url` to paste. `resend_invite` / `list_invites` for pending links.
 - Outward link: `share_document` — token shown **once**. Refuses Inbox (`inbox_unshareable`).
