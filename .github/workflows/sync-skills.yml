@@ -29,10 +29,21 @@ jobs:
             grep -q "^name: ${skill}$" "plugins/onecell/skills/${skill}/SKILL.md.new"
             mv "plugins/onecell/skills/${skill}/SKILL.md.new" "plugins/onecell/skills/${skill}/SKILL.md"
           done
+      - name: Pull the live hook script
+        run: |
+          set -euo pipefail
+          out=plugins/onecell-hooks/scripts/onecell-hook.sh
+          curl -fsS "https://onecell.io/agent-setup/hook.sh" -o "$out.new"
+          # Same guard as the skills: only a real script with this deployment's origin
+          # filled in may replace the bundled copy.
+          head -1 "$out.new" | grep -qx '#!/bin/sh'
+          grep -q "^ONECELL_DEFAULT_URL='https://onecell.io'$" "$out.new"
+          sh -n "$out.new"
+          mv "$out.new" "$out" && chmod +x "$out"
       - name: Commit if they changed
         run: |
-          if git diff --quiet; then echo "skills unchanged"; exit 0; fi
+          if git diff --quiet; then echo "skills and hook unchanged"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Sync skills from onecell.io"
+          git commit -am "Sync skills and hook script from onecell.io"
           git push

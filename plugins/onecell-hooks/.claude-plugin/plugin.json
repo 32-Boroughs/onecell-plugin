@@ -1,11 +1,24 @@
 {
   "name": "onecell-hooks",
-  "description": "Optional hooks for the onecell plugin: relevant memory on your prompts, a nudge to save what a turn settled, and a short briefing after /clear. Off until you turn them on at onecell.io/settings/agents.",
+  "description": "Optional hooks for onecell in Claude Code: relevant memory on your prompts, a nudge to save what a turn settled, and a short briefing at the start of a session. Each is off until you turn it on at onecell.io/settings/agents.",
   "author": {
     "name": "32 Boroughs",
     "url": "https://onecell.io"
   },
   "homepage": "https://onecell.io/settings/agents#hooks",
   "repository": "https://github.com/32-Boroughs/onecell-plugin",
-  "keywords": ["memory", "hooks", "onecell"]
+  "keywords": [
+    "memory",
+    "hooks",
+    "onecell"
+  ],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "onecell API key",
+      "description": "An ic_ key from onecell.io/settings/agents#keys. Create it with Drafts only ticked: the hooks only read and keep session state. Stored in your system's credential store.",
+      "required": true,
+      "sensitive": true
+    }
+  }
 }

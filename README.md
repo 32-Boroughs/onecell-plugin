@@ -32,9 +32,11 @@ A second plugin lets onecell join a session without being asked:
 
 - **Relevant memory:** when a prompt strongly matches something in your onecell, a few lines from it are added to Claude Code's context.
 - **Save nudges:** when a turn looks like it decided, merged or shipped something, Claude Code is asked to save a short draft to your private Capture cell.
-- **Briefing:** after `/clear` or compaction, a few lines on your active cluster, open decisions and recent drafts.
+- **Briefing:** at the start of a session, and after `/clear` or compaction, a few lines on your active cluster, open decisions and recent drafts.
 
-It needs the `onecell` plugin above, and each behaviour is **off until you turn it on** at [onecell.io/settings/agents](https://onecell.io/settings/agents#hooks). Once installed, it sends each prompt and Claude's last reply to onecell.io so onecell can decide whether to answer. Neither is stored, and with the switches off onecell ignores them. If you'd rather nothing leave your machine, don't install it.
+When you enable it, Claude Code asks for an **API key**. Create one at [onecell.io/settings/agents](https://onecell.io/settings/agents#keys) with **Drafts only** ticked, and paste it there; Claude Code keeps it in your system's credential store. The hooks talk to onecell with that key, so they work however onecell itself is connected (this plugin, `claude mcp add`, or not at all). They need `curl` and `jq`.
+
+Each behaviour is **off until you turn it on** at [onecell.io/settings/agents](https://onecell.io/settings/agents#hooks). Once installed, the plugin sends each prompt and Claude's last reply to onecell.io so onecell can decide whether to answer. Neither is stored, and with the switches off onecell ignores them. If you'd rather nothing leave your machine, don't install it.
 
 ## Staying current
 

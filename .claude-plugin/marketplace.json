@@ -14,7 +14,7 @@
     {
       "name": "onecell-hooks",
       "source": "./plugins/onecell-hooks",
-      "description": "Optional, needs the onecell plugin. Hooks that bring onecell in without being asked: relevant memory on your prompts, a nudge to save what a turn settled, a briefing after /clear. Each is off until you turn it on at onecell.io/settings/agents."
+      "description": "Optional. Hooks that bring onecell in without being asked: relevant memory on your prompts, a nudge to save what a turn settled, a briefing at session start. Asks for a Drafts only key when enabled; each behaviour is off until you turn it on at onecell.io/settings/agents."
     }
   ]
 }
