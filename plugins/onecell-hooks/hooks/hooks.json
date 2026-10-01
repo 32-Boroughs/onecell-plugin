@@ -4,16 +4,9 @@
       {
         "hooks": [
           {
-            "type": "mcp_tool",
-            "server": "plugin:onecell:onecell",
-            "tool": "hook_event",
-            "timeout": 10,
-            "input": {
-              "event": "prompt",
-              "prompt": "${prompt}",
-              "session_id": "${session_id}",
-              "client": "claude-code"
-            }
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/onecell-hook.sh",
+            "timeout": 10
           }
         ]
       }
@@ -22,35 +15,21 @@
       {
         "hooks": [
           {
-            "type": "mcp_tool",
-            "server": "plugin:onecell:onecell",
-            "tool": "hook_event",
-            "timeout": 10,
-            "input": {
-              "event": "stop",
-              "last_message": "${last_assistant_message}",
-              "session_id": "${session_id}",
-              "client": "claude-code"
-            }
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/onecell-hook.sh",
+            "timeout": 10
           }
         ]
       }
     ],
     "SessionStart": [
       {
-        "matcher": "clear|compact",
+        "matcher": "startup|resume|clear|compact",
         "hooks": [
           {
-            "type": "mcp_tool",
-            "server": "plugin:onecell:onecell",
-            "tool": "hook_event",
-            "timeout": 10,
-            "input": {
-              "event": "session",
-              "source": "${source}",
-              "session_id": "${session_id}",
-              "client": "claude-code"
-            }
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/onecell-hook.sh",
+            "timeout": 10
           }
         ]
       }
