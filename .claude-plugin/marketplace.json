@@ -10,6 +10,11 @@
       "name": "onecell",
       "source": "./plugins/onecell",
       "description": "Connects Claude Code to onecell (MCP) and teaches it the onecell rules: Inbox vs hive, dry runs, search then cite, when to ask you."
+    },
+    {
+      "name": "onecell-hooks",
+      "source": "./plugins/onecell-hooks",
+      "description": "Optional, needs the onecell plugin. Hooks that bring onecell in without being asked: relevant memory on your prompts, a nudge to save what a turn settled, a briefing after /clear. Each is off until you turn it on at onecell.io/settings/agents."
     }
   ]
 }

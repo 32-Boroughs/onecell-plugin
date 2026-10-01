@@ -1,0 +1,11 @@
+{
+  "name": "onecell-hooks",
+  "description": "Optional hooks for the onecell plugin: relevant memory on your prompts, a nudge to save what a turn settled, and a short briefing after /clear. Off until you turn them on at onecell.io/settings/agents.",
+  "author": {
+    "name": "32 Boroughs",
+    "url": "https://onecell.io"
+  },
+  "homepage": "https://onecell.io/settings/agents#hooks",
+  "repository": "https://github.com/32-Boroughs/onecell-plugin",
+  "keywords": ["memory", "hooks", "onecell"]
+}
