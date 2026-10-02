@@ -80,6 +80,7 @@ Some choices belong to the human. Ask in one line and name the default. Skip a q
 | Switch cluster | "Switch to {cluster}? Your onecell sidebar switches too." | Don't. Name cells with `cell`, or find them with `list_cells` `all_clusters`. |
 | Move a cell to a cluster | "Move {cell} ({n} docs) to {cluster}? {people} aren't in {cluster}, so it leaves their sidebar and search." | Don't |
 | Move out of a shared cell | "{from} is shared — the people there lose {title}. Move anyway?" | Don't |
+| Mention | "Mention {name}? They're told in onecell and by their agent." | Don't — mention only someone the human named, or asked you to bring in |
 
 ## Move work
 
@@ -130,7 +131,7 @@ Agent recipe:
 If the human turned hooks on (Settings → Agents), onecell can speak without being asked:
 
 - Lines headed **onecell memory that may be relevant** were added by a hook from your prompt. Use and cite them (cell · heading); do not search for the same thing again.
-- **onecell briefing** lines open a session or follow `/clear`: active cluster, open decisions, recent Capture drafts.
+- **onecell briefing** lines open a session or follow `/clear`: unread mentions, active cluster, open decisions, recent Capture drafts. A line under **Unread mentions** reads `- {who} (via agent) in {cell} · {document}: "…"` — tell the human who needs them; `list_mentions` has the links. The briefing never marks anything read.
 - A stop that says **this turn looks like it settled something** is a suggestion. If it is worth keeping, save one short draft to the **Capture** cell (fall back to Inbox) and at most one `remember`, then stop. If not, or already saved, just stop. Never publish or share from a nudge.
 - Never call `hook_event` yourself; it is for the client's hooks.
 
@@ -160,6 +161,7 @@ Mutating tools default `dry_run` true. Call once, read `{applied, reason}`, then
 - Ids on blocks are generated if omitted.
 - Pictures and attachments: `upload_asset` with `content_base64` (8 MB max; the bytes decide the type), then put the returned `block` in the document. Pass `document_id` for the document it is going into — create the document first if needed — so the file belongs to that document's owner and keeps showing for everyone who can read it, even in a shared cell you later lose.
 - `delete_document` moves to trash (out of search immediately). `restore_document` brings it back. `list_documents` with `trash: true` lists the bin. After 30 days the reconciler hard-deletes.
+- Public pages: a document is readable at `/p/<slug>` only when it is published *and* its visibility is `public` (`update_document` `visibility`). Ask the human before making anything public; a draft-only key cannot change visibility. Published, public documents tagged `help:recipe` in onecell's own recipes cell appear on onecell.io/help.
 - Move between cells you own, in any cluster, with `update_document` `cell` — follow Move work. Nested children come along. Granted cells cannot be a destination. In the UI, "Move to…" does the same; drop a row onto another in the same cell to nest; drop it on the cell in the sidebar to un-nest.
 - Deleting a **cell** is UI-only and only for an empty one. Never try to empty a cell so it can be deleted.
 
@@ -261,6 +263,17 @@ onecell://cell?v=1&cell=<uuid>&slug=<slug>&vu=<urlencoded ISO>
 ```
 
 Stay on nouns: cluster · cell · hive · Inbox.
+
+## Mentions
+
+Bring a teammate in by @mentioning them — a dependency you found on their work, a review, a decision they should weigh in on. They are told in onecell and by their agent; there is no email.
+
+1. Who: `list_members` with `cell` — the people you can mention there, with `can_open`: `drafts` (told now), `published` (told once the document is published), `none` (not told). Mentions in Inbox tell no one.
+2. Write the mention into a rich-text field — text, callout, toggle, steps body or prompt body — as `<span data-mention="{workspaceId}">@{Name}</span>`. Not in decision fields, checklist items, headings or tables: those show the id verbatim, and publishing refuses it (`mention.plain_text_field`). To mention someone about a decision, put a text block beside it.
+3. Dry run first: the result's `mentions` says who will be told (`notify`), who later (`not_yet_visible`), and who not and why (`skipped`). The server sets the name; a mention of someone outside the cluster is removed. Ask first (Decision points → Mention).
+4. Re-saving never tells anyone twice. Mentioning them again in a new block does.
+
+Your own: `list_mentions` (unread first; who, cell, document, passage, link). Pass `mark_read` (ids or `"all"`) only once the human has seen them.
 
 ## Team
 
