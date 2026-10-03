@@ -115,11 +115,11 @@ When Notion, shopping, email, research, coding, or any other loaded skill produc
 
 Human paste (Grok / Codex / Claude / Cowork):
 
-> Save this session to my onecell Inbox as a draft. Use prompt blocks for key turns, text blocks with html links for URLs, code blocks for logs or pasted artifacts, and one remember for the decision. Do not publish or put it on the hive unless I say so. Reply with the document UUID link.
+> Save this session to onecell as a draft in my Capture cell (my Inbox if I have no Capture cell). Use prompt blocks for key turns, text blocks with html links for URLs, code blocks for logs or pasted artifacts, and one remember for the decision. Do not publish or put it on the hive unless I say so. Reply with the document UUID link.
 
 Agent recipe:
 
-1. Destination default: **Inbox**. Use a named cell only if the human names it.
+1. Destination default: **Capture**, the private cell your own drafts go to (`list_cells`: a cell you own with slug `capture`); **Inbox** if there is none. Use a named cell only if the human names it.
 2. `create_document` with `dry_run` true, then false. Title like `Session — {client} — {date}`.
 3. Blocks: short `heading` summary → `prompt` turns (truncate long bodies) → `text` (html links for URLs) → `code` for logs/pastes → more `text` for decisions. Do **not** dump raw chat logs onto the hive as truth.
 4. Stay **draft** unless the human asks to publish. Hive, shared cell, or publish → Decision points.
@@ -159,6 +159,7 @@ Mutating tools default `dry_run` true. Call once, read `{applied, reason}`, then
 - Writes answer with what changed (`changes.fields`, `changes.blockIds`) and the new `document.version`, not the document. Pass `verbose: true` only if you need the whole thing back.
 - Tags classify documents for a work queue: `create_document` `tags` (lowercase, `key:value` allowed, e.g. `ticket`, `state:todo`; 20 max). Move state with `update_document` `tags_add` / `tags_remove` and `expected_version` — no `blocks` needed. Find them with `list_documents` `tags` (all must match; `state:*` matches a prefix); every row carries its tags.
 - Ids on blocks are generated if omitted.
+- Title and summary length warnings (`title.short`, `title.long`, `summary.short`, `summary.long`) are advice and never block a publish. Aim for a title under 65 characters and a one- or two-sentence summary under 200, but do not rewrite or retry a write just to clear one.
 - Pictures and attachments: `upload_asset` with `content_base64` (8 MB max; the bytes decide the type), then put the returned `block` in the document. Pass `document_id` for the document it is going into — create the document first if needed — so the file belongs to that document's owner and keeps showing for everyone who can read it, even in a shared cell you later lose.
 - `delete_document` moves to trash (out of search immediately). `restore_document` brings it back. `list_documents` with `trash: true` lists the bin. After 30 days the reconciler hard-deletes.
 - Public pages: a document is readable at `/p/<slug>` only when it is published *and* its visibility is `public` (`update_document` `visibility`). Ask the human before making anything public; a draft-only key cannot change visibility. Published, public documents tagged `help:recipe` in onecell's own recipes cell appear on onecell.io/help.
