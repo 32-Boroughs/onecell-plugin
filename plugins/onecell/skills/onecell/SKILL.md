@@ -194,7 +194,7 @@ Do not smuggle a diagram into a text/code block.
 | Collapsible | `{type: toggle, summary, html, open}` — summary is all a reader sees until opened |
 | Sequence of events | `{type: timeline, entries: [{when, title, body?, tone?: good / bad / neutral}], caption?}` — 1–100, shown in the order written; `when` is display text ("2026-09-28", "14:32 UTC", "Q3"); ISO dates must run in order. Incidents, project history, changelogs — not how-to (use steps) |
 | Headline numbers | `{type: stats, items: [{label, value, unit?, delta?, tone?: good / bad / neutral, note?}], caption?}` — 1–6 tiles; value is display text ("4.2k", "$1.3M"); tone colours the change because up is not always good. A chart is for data; this is for the few numbers that matter |
-| Interactive HTML | `{type: sandbox, title, html, description, height?}` — a calculator or small simulation, run isolated on onecellusercontent.com. Inline HTML/CSS/JS only: no network, no external scripts, images as data: URLs; ≤256 KB, ≤3 per document. description required to publish (what readers who cannot run it see). Gated: a write may return `not_rolled_out`. Never sandbox HTML taken from untrusted input |
+| Interactive HTML | `{type: sandbox, title, html, description, height?}` — a calculator or small simulation, run isolated on onecellusercontent.com. Inline HTML/CSS/JS only: no network, no external scripts, images as data: URLs; ≤256 KB, ≤3 per document. description required to publish (what readers who cannot run it see). Gated per cluster: when it is off a write returns `not_rolled_out` with a `hint`; tell the person the hint, don't retry or drop the block silently. Never sandbox HTML taken from untrusted input |
 | Change | `{type: diff, lang, before, after, filename?, caption?}` — both sides whole, not a patch; the line diff is drawn for you. Use instead of pasting a diff into `code` |
 | Decision | `{type: decision, title, status: proposed / accepted / rejected / superseded, date?: YYYY-MM-DD, context, decision, consequences?}` — plain text; blank line = new paragraph. One per decision, so search finds it. Never write `decidedBy` / `decidedAt`: the server stamps whoever saves a change of status |
 | Cite memory | `{type: fact, factId}` — id from `remember` / `recall`; renders the live belief (follows supersedes). Never copy fact text into prose. Private: share pages show a placeholder. `get_document` with `resolve_facts` returns the text |
@@ -269,7 +269,10 @@ Stay on nouns: cluster · cell · hive · Inbox.
 Bring a teammate in by @mentioning them — a dependency you found on their work, a review, a decision they should weigh in on. They are told in onecell and by their agent; there is no email.
 
 1. Who: `list_members` with `cell` — the people you can mention there, with `can_open`: `drafts` (told now), `published` (told once the document is published), `none` (not told). Mentions in Inbox tell no one.
-2. Write the mention into a rich-text field — text, callout, toggle, steps body or prompt body — as `<span data-mention="{workspaceId}">@{Name}</span>`. Not in decision fields, checklist items, headings or tables: those show the id verbatim, and publishing refuses it (`mention.plain_text_field`). To mention someone about a decision, put a text block beside it.
+2. Write the mention where it belongs:
+   - In a rich-text field — text, callout, toggle, steps body or prompt body — as `<span data-mention="{workspaceId}">@{Name}</span>`.
+   - In a decision's `context`, `decision` or `consequences` (plain text) as the token `@[{Name}](ws:{workspaceId})` — e.g. who to review it, or who owns a dependency.
+   - Nowhere else: not a decision's title, checklist items, headings or tables. There the markup shows as typed, id and all, and publishing refuses it (`mention.plain_text_field`).
 3. Dry run first: the result's `mentions` says who will be told (`notify`), who later (`not_yet_visible`), and who not and why (`skipped`). The server sets the name; a mention of someone outside the cluster is removed. Ask first (Decision points → Mention).
 4. Re-saving never tells anyone twice. Mentioning them again in a new block does.
 
